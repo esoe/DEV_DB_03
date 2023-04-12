@@ -11,12 +11,13 @@ entity "Авторы" as authors
 entity "Штрихкоды" as barcodes
 entity "Библиография" as bibliography
 entity "Жанры" as genres
-entity "Жанры" as genres
 entity "Издательства" as publishers
-entity "Карточка читателя" as account
-entity "Паспорт" as pasport
-entity "Свидетельство о рождении" as certificate
+entity "Карточка читателя" as accounts
+entity "Паспорт" as pasports
+entity "Свидетельство о рождении" as certificates
 entity "Выдача книг" as allocation
+entity "Бронирование" as booking
+
 
 ' Сведения о приобретенных библиотекой книгах
 ' одна строчка - одно издание
@@ -70,7 +71,8 @@ table(publishers) {
   column(contactname): VARCHAR[150]         >>"Контакты-имя"
 }
 
-table(account) {
+' Карточки читателей
+table(accounts) {
     primary_key( id ): INTEGER              >>"Идентификатор"
     column(fname): VARCHAR[50]              >>"Имя"
     column(sname): VARCHAR[50]              >>"Отчество"
@@ -78,19 +80,56 @@ table(account) {
     column(address): VARCHAR[300]           >>"Адрес"
     column(phone): INTEGER                  >>"Телефон"
     foreign_key(pasport): INTEGER           >>"Паспорт"
-
-
+    foreign_key(sertificate): INTEGER       >>"Свидетельство о рождении"
 }
+
+' Паспорта
+table(pasports){
+    primary_key( id ): INTEGER              >>"Идентификатор"
+    column(serial): INTEGER                 >>"Серия"
+    column(number): INTEGER                 >>"Номер"
+}
+
+' Свидетельства о рождении
+table(certificates){
+    primary_key( id ): INTEGER              >>"Идентификатор"
+    column(serial): VARCHAR[10]             >>"Серия"
+    column(number): INTEGER                 >>"Номер"
+}
+
+' Выдача книг
 table(allocation) {
-'   primary_key( id ): UUID 
-'   column( name ): CHARACTER VARYING 
-'   column( country ): CHARACTER VARYING
-'   column( postCode ): INTEGER
+    primary_key( id ): INTEGER              >>"Идентификатор"
+    column(book_out): DATE                  >>"Дата выдачи"
+    column(book_in): DATE                   >>"Планируемая дата возврата"
+    column(book_in_fact): DATE              >>"Фактическая дата возврата"
+    column(penalty): MONEY                  >>"Штраф"
+    column(late):INTEGER                    >>"Период задержки возврата книги"
+    foreign_key(repository_id): INTEGER     >>"Идентификатор издания"
+    foreign_key(booking_id): INTEGER        >>"Идентификатор бронирования"
+    foreign_key(repository_id): INTEGER     >>"Идентификатор издания"
+}
+
+' Бронирование книг
+table(booking){
+    primary_key( id ): INTEGER              >>"Идентификатор"
+    foreign_key(repository_id): INTEGER     >>"Идентификатор издания"
+    column(date): DATE                      >>"Дата бронирования"
 }
 
 ' user }|--|| city
 
-repository }--{ authors :   "Одна книга может  иметь несколько авторов\nОдин автор мог написать несколько книг"
+repository --{ publishers : "repository_id"
+repository --{ barcodes : "repository_id"
+repository --{ genres : "genre_id"
 
+bibliography --{ repository
+bibliography --{ authors
 
+accounts ||--|| certificates
+accounts ||--|| pasports
+
+allocation --{ booking  : "booking_id"
+allocation --{ repository : "repository_id"
+allocation --{ accounts : "account_id"
 @enduml
