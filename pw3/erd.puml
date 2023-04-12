@@ -1,0 +1,96 @@
+@startuml
+!define primary_key(x) <b><color:#b8861b><&key></color> x</b>
+!define foreign_key(x) <b><color:#aaaaaa><&key></color> x</b>
+!define column(x) <b><color:#efefef><&media-record></color> x</b>
+!define table(x) entity x << (T, white) >>
+
+title "Entity Relationship Diagram (ERD): Библиотека"
+' left to right direction
+entity "Библиотечный фонд" as repository
+entity "Авторы" as authors
+entity "Штрихкоды" as barcodes
+entity "Библиография" as bibliography
+entity "Жанры" as genres
+entity "Жанры" as genres
+entity "Издательства" as publishers
+entity "Карточка читателя" as account
+entity "Паспорт" as pasport
+entity "Свидетельство о рождении" as certificate
+entity "Выдача книг" as allocation
+
+' Сведения о приобретенных библиотекой книгах
+' одна строчка - одно издание
+' - которая может быть приобретена в нескольких экземплярах
+table(repository) {
+    primary_key(id): INTEGER                >>"Идентификатор"
+    column(title): VARCHAR[300]             >>"Наименование"
+    foreign_key(genre): INTEGER             >>"Жанр"
+    column(isbn): INTEGER                   >>"isbn"
+    column(binding): VARCHAR[10]            >>"Вид переплета"
+    column(year): DATE                      >>"Год издания"
+    foreign_key(publishers_id): INTEGER     >>"Издательство"
+    column(instances): INTEGER              >>"Количество экземпляров"
+}
+
+' сведения об авторах
+table(authors){
+    primary_key(id): INTEGER                >>"Идентификатор"
+    column(fio): VARCHAR[50]                >>"ФИО"
+    column(country): VARCHAR[20]            >>"Страна рождения"
+}
+
+' Таблица экземпляров книг
+' Одна строка - один физический экземпляр
+table(barcodes){
+    primary_key(id): INTEGER                >>"Идентификатор"
+    column(code): INTEGER                   >>"Штрихкод.csv"
+    foreign_key(repository_id)              >>"Публикация"
+}
+
+' сведения о соавторах
+' таблица для определения:
+' - перечня авторов книги
+' - перечня книг в написании которых участвовал автор
+table(bibliography){
+    foreign_key(repository_id): INTEGER
+    foreign_key(authors_id): INTEGER
+}
+
+' Жанры
+table(genres){
+    primary_key(id): INTEGER                >>"Идентификатор"
+    column(genre)                           >>"Жанр"
+}
+
+table(publishers) {
+  primary_key( id ): INTEGER                >>"Идентификатор"
+  column(name): VARCHAR[50]                 >>"Наименование"
+  column(address): VARCHAR[300]             >>"Адрес"
+  column(phone): INTEGER                    >>"Телефон"
+  column(contactname): VARCHAR[150]         >>"Контакты-имя"
+}
+
+table(account) {
+    primary_key( id ): INTEGER              >>"Идентификатор"
+    column(fname): VARCHAR[50]              >>"Имя"
+    column(sname): VARCHAR[50]              >>"Отчество"
+    column(lname): VARCHAR[50]              >>"Фамилия"
+    column(address): VARCHAR[300]           >>"Адрес"
+    column(phone): INTEGER                  >>"Телефон"
+    foreign_key(pasport): INTEGER           >>"Паспорт"
+
+
+}
+table(allocation) {
+'   primary_key( id ): UUID 
+'   column( name ): CHARACTER VARYING 
+'   column( country ): CHARACTER VARYING
+'   column( postCode ): INTEGER
+}
+
+' user }|--|| city
+
+repository }--{ authors :   "Одна книга может  иметь несколько авторов\nОдин автор мог написать несколько книг"
+
+
+@enduml
