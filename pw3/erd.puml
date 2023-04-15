@@ -1,10 +1,10 @@
-@startuml
+@startuml ERD
 !define primary_key(x) <b><color:#b8861b><&key></color> x</b>
 !define foreign_key(x) <b><color:#aaaaaa><&key></color> x</b>
 !define column(x) <b><color:#efefef><&media-record></color> x</b>
 !define table(x) entity x << (T, white) >>
 
-title "Entity Relationship Diagram (ERD): Библиотека"
+title "Entity Relationship Diagram (ERD): LIBRARY (Библиотека)"
 ' left to right direction
 entity "Библиотечный фонд" as repository
 entity "Авторы" as authors
@@ -25,7 +25,7 @@ entity "Бронирование" as booking
 table(repository) {
     primary_key(id): INTEGER                >>"Идентификатор"
     column(title): VARCHAR[300]             >>"Наименование"
-    foreign_key(genre): INTEGER             >>"Жанр"
+    foreign_key(genres_id): INTEGER         >>"Жанр"
     column(isbn): INTEGER                   >>"isbn"
     column(binding): VARCHAR[10]            >>"Вид переплета"
     column(year): DATE                      >>"Год издания"
@@ -37,7 +37,7 @@ table(repository) {
 table(authors){
     primary_key(id): INTEGER                >>"Идентификатор"
     column(fio): VARCHAR[50]                >>"ФИО"
-    column(country): VARCHAR[20]            >>"Страна рождения"
+    column(country): VARCHAR[30]            >>"Страна рождения"
 }
 
 ' Таблица экземпляров книг
