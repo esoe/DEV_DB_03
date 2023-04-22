@@ -24,12 +24,12 @@ entity "Бронирование" as booking
 table(repository) {
     primary_key(id): INTEGER                >>"Идентификатор"
     column(title): VARCHAR[300]             >>"Наименование"
-    foreign_key(genres_id): INTEGER         >>"Жанр"
-    column(isbn): INTEGER                   >>"isbn"
-    column(binding): VARCHAR[10]            >>"Вид переплета"
-    column(year): DATE                      >>"Год издания"
-    foreign_key(publishers_id): INTEGER     >>"Издательство"
     column(instances): INTEGER              >>"Количество экземпляров"
+    column(isbn): INTEGER                   >>"isbn"
+    column(year): DATE                      >>"Год издания"
+    foreign_key(bindings_id): INTEGER           >>"Вид переплета"
+    foreign_key(publishers_id): INTEGER     >>"Издательство"
+    foreign_key(genres_id): INTEGER         >>"Жанр"
 }
 
 ' Типы переплетов
