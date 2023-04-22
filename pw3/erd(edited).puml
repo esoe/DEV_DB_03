@@ -27,7 +27,7 @@ table(repository) {
     column(instances): INTEGER              >>"Количество экземпляров"
     column(isbn): INTEGER                   >>"isbn"
     column(year): DATE                      >>"Год издания"
-    foreign_key(bindings_id): INTEGER           >>"Вид переплета"
+    foreign_key(bindings_id): INTEGER       >>"Вид переплета"
     foreign_key(publishers_id): INTEGER     >>"Издательство"
     foreign_key(genres_id): INTEGER         >>"Жанр"
 }
@@ -88,6 +88,7 @@ table(accounts) {
     column(phone): INTEGER                  >>"Телефон"
     foreign_key(pasport_id): INTEGER        >>"Паспорт"
     foreign_key(sertificate_id): INTEGER    >>"Свидетельство о рождении"
+    foreign_key(account_id)                 >>"Карточка родителя"
 }
 
 ' Паспорта
@@ -107,6 +108,7 @@ table(certificates){
 ' Выдача книг
 table(allocation) {
     primary_key( id ): INTEGER              >>"Идентификатор"
+    foreign_key(account_id): INTEGER        >>"Карточка читателя"
     column(book_out): DATE                  >>"Дата выдачи"
     column(book_in): DATE                   >>"Планируемая дата возврата"
     column(book_in_fact): DATE              >>"Фактическая дата возврата"
@@ -118,9 +120,10 @@ table(allocation) {
 ' Бронирование книг
 ' происходит по изданиям, чаще всего читателю не важно, какой переплет ему дадут
 table(booking){
-    primary_key(id) : INTEGER
-    foreign_key(repository_id) : INTEGER
-    column(date) : DATE
+    primary_key(id) : INTEGER               >>"Идентификатор"
+    foreign_key(accounts_id): INTEGER       >>"Карточка читателя"
+    foreign_key(repository_id) : INTEGER    >>"Издание"
+    column(date) : DATE                     >>"Дата бронирования"
 }
 
 repository }|--|| publishers : "publisher_id"
@@ -134,9 +137,23 @@ bibliography }|--|| authors : "author_id"
 
 accounts ||--|| certificates : "sertificate_id"
 accounts ||--|| pasports : "pasport_id"
+accounts ||--|{ accounts : "account_id"
 
 booking }|--|| repository : "repository_id"
+booking }|--|| accounts : "account_id"
 
 allocation }|--|| barcodes : "barcode_id"
 allocation }|--|| accounts : "account_id"
+
+' - в таблице бронирования забыто поле для читателя, который забронировал книгу;
+' 1. Добавил в отношение "Бронирование" поле account_id
+' 2. Добавил связь "Бронирование" --> "Карточка читателя"
+
+' - не понятно, как реализуется связь читателя младше 14 лет с одним из взрослых родственников;
+' 3. Добавил в "Карточку читателя" поле account_id
+' 4. Добавил связь "Карточка читателя" --> "Карточка читателя"
+
+' - в таблице "Выдача книг" потерялась колонка account_id, хотя ею подписана связь с таблицей "Карточка читателя".
+' 5. Добавил поле account_id в отношение "Выдача книг"
+
 @enduml
