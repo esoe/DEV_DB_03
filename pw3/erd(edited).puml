@@ -7,6 +7,7 @@
 title "Entity Relationship Diagram (ERD): LIBRARY (Библиотека)"
 ' left to right direction
 entity "Библиотечный фонд" as repository
+entity "Вид переплета" as bindings
 entity "Авторы" as authors
 entity "Штрихкоды" as barcodes
 entity "Библиография" as bibliography
@@ -22,7 +23,7 @@ entity "Бронирование" as booking
 ' одна строчка - одно издание
 ' - которая может быть приобретена в нескольких экземплярах
 table(repository) {
-    primary_key(id): INTEGER                >>"Идентификатор"
+    primary_key(id): SERIAL                 >>"Идентификатор"
     column(title): VARCHAR[300]             >>"Наименование"
     column(instances): INTEGER              >>"Количество экземпляров"
     column(isbn): INTEGER                   >>"isbn"
@@ -36,13 +37,13 @@ table(repository) {
 ' Для автоподстановки при заполнении поля переплеты
 ' -также возможно типы переплетов поменяются в будущем (жесткий, мягкий, глянцевый, матовый, электронная книга)
 table(bindings){
-    primary_key(id): INTEGER                >>"Идентификатор"
+    primary_key(id): SERIAL                 >>"Идентификатор"
     column(type): VARCHAR[10]               >>"Тип переплета"
 }
 
 ' сведения об авторах
 table(authors){
-    primary_key(id): INTEGER                >>"Идентификатор"
+    primary_key(id): SERIAL                 >>"Идентификатор"
     column(fio): VARCHAR[50]                >>"ФИО"
     column(country): VARCHAR[30]            >>"Страна рождения"
 }
@@ -50,7 +51,7 @@ table(authors){
 ' Таблица экземпляров книг
 ' Одна строка - один физический экземпляр
 table(barcodes){
-    primary_key(id): INTEGER                >>"Идентификатор"
+    primary_key(id): SERIAL                 >>"Идентификатор"
     column(value): INTEGER                  >>"Штрихкод"
     foreign_key(repository_id)              >>"Публикация"
 }
@@ -66,12 +67,12 @@ table(bibliography){
 
 ' Жанры
 table(genres){
-    primary_key(id): INTEGER                >>"Идентификатор"
+    primary_key(id): SERIAL                 >>"Идентификатор"
     column(value): VARCHAR[30]              >>"Жанр"
 }
 
 table(publishers) {
-  primary_key( id ): INTEGER                >>"Идентификатор"
+  primary_key( id ): SERIAL                 >>"Идентификатор"
   column(name): VARCHAR[50]                 >>"Наименование"
   column(address): VARCHAR[300]             >>"Адрес"
   column(phone): INTEGER                    >>"Телефон"
@@ -80,7 +81,7 @@ table(publishers) {
 
 ' Карточки читателей
 table(accounts) {
-    primary_key( id ): INTEGER              >>"Идентификатор"
+    primary_key( id ): SERIAL               >>"Идентификатор"
     column(fname): VARCHAR[50]              >>"Имя"
     column(sname): VARCHAR[50]              >>"Отчество"
     column(lname): VARCHAR[50]              >>"Фамилия"
@@ -93,21 +94,21 @@ table(accounts) {
 
 ' Паспорта
 table(pasports){
-    primary_key( id ): INTEGER              >>"Идентификатор"
+    primary_key( id ): SERIAL               >>"Идентификатор"
     column(serial): INTEGER                 >>"Серия"
     column(number): INTEGER                 >>"Номер"
 }
 
 ' Свидетельства о рождении
 table(certificates){
-    primary_key( id ): INTEGER              >>"Идентификатор"
+    primary_key( id ): SERIAL               >>"Идентификатор"
     column(serial): VARCHAR[10]             >>"Серия"
     column(number): INTEGER                 >>"Номер"
 }
 
 ' Выдача книг
 table(allocation) {
-    primary_key( id ): INTEGER              >>"Идентификатор"
+    primary_key( id ): SERIAL               >>"Идентификатор"
     foreign_key(account_id): INTEGER        >>"Карточка читателя"
     column(book_out): DATE                  >>"Дата выдачи"
     column(book_in): DATE                   >>"Планируемая дата возврата"
@@ -120,7 +121,7 @@ table(allocation) {
 ' Бронирование книг
 ' происходит по изданиям, чаще всего читателю не важно, какой переплет ему дадут
 table(booking){
-    primary_key(id) : INTEGER               >>"Идентификатор"
+    primary_key(id) : SERIAL                >>"Идентификатор"
     foreign_key(accounts_id): INTEGER       >>"Карточка читателя"
     foreign_key(repository_id) : INTEGER    >>"Издание"
     column(date) : DATE                     >>"Дата бронирования"
